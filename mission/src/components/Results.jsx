@@ -78,7 +78,7 @@ const Result = ({ result,tf }) => {
               <div className="tradingview-widget-copyright">
                 <a
                   href="https://www.tradingview.com/"
-                  rel="noopener nofollow"
+                  rel="noopener noreferrer"
                   target="_blank"
                 >
                   .
