@@ -81,7 +81,7 @@ const Result = ({ result,tf }) => {
                   rel="noopener nofollow"
                   target="_blank"
                 >
-
+                  .
                 </a>
               </div>
             </div>
