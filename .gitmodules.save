@@ -1,0 +1,3 @@
+[submodule "mission"]
+    path = mission
+    url = <url_to_submodule_repository>
