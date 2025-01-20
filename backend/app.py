@@ -14,6 +14,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Frontend paths
 frontend_folder = os.path.abspath(os.path.join(os.getcwd(), "..", "mission"))
 dist_folder = os.path.join(frontend_folder, "dist")
+print("Frontend folder:", frontend_folder)
+print("Dist folder:", dist_folder)
 
 # Enable CORS
 CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -22,12 +24,17 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 @app.route("/", defaults={"filename": ""})
 @app.route("/<path:filename>")
 def index(filename):
+    print("Requested file:", filename)
+    print("Dist folder exists:", os.path.exists(dist_folder))
+    if os.path.exists(dist_folder):
+        print("Files in dist folder:", os.listdir(dist_folder))
     if not filename:
         filename = "index.html"
     try:
         return send_from_directory(dist_folder, filename)
     except FileNotFoundError:
         return send_from_directory(dist_folder, "index.html"), 404
+
 
 # Initialize database
 db.init_app(app)
