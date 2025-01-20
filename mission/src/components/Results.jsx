@@ -1,20 +1,20 @@
 import React, { useRef, useState } from "react";
 // import TradingView from "./TradingView";
-import '../App.css'
+import "../App.css";
 
-const Result = ({ result,tf }) => {
+const Result = ({ result, tf }) => {
   const container = useRef();
   const [showCharts, setShowcharts] = useState(false);
 
   const createScriptsForAllStocks = () => {
-    setShowcharts(true)
+    setShowcharts(true);
     result.forEach((stock) => {
       const script = document.createElement("script");
       script.src =
         "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
       script.type = "text/javascript";
       script.async = true;
-      console.log(trimStockSymbol(stock))
+      console.log(trimStockSymbol(stock));
       script.innerHTML = `
         {
           "autosize": true,
@@ -47,44 +47,73 @@ const Result = ({ result,tf }) => {
   return (
     <center>
       <h2>Results</h2>
-      {!showCharts && result?.map((stock, index) => (
-        <li key={index}>
-          <a
-            href={` https://www.moneycontrol.com/mc/stock/chart?scId=RVN&exchangeId=${trimMoneyControl(
-              stock
-            )}&ex=NSE`}
-           
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{textDecoration: "none"}}
-          >
-            {stock.split(":")[1] || stock}
-          </a>
-        </li>
-      ))}
-      {
-        !showCharts && result && result.length>0 &&(<button onClick={createScriptsForAllStocks} style={{marginTop: "20px"}}>See charts</button>)
-      }
+      {!showCharts && <div className="list" >
+        <div className="moneyControl">
+          <h4>MoneyControl</h4>
+          {!showCharts &&
+            result?.map((stock, index) => (
+              <span key={index}>
+                <a
+                  href={` https://www.moneycontrol.com/mc/stock/chart?scId=RVN&exchangeId=${trimMoneyControl(
+                    stock
+                  )}&ex=NSE`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: "none" }}
+                >
+                  {stock.split(":")[1] || stock}
+                </a>
+              </span>
+            ))}
+        </div>
+
+        <div className="tradingView">
+          <h4>TradingView</h4>
+          {!showCharts &&
+            result?.map((stock, index) => (
+              <span key={index}>
+               <a
+              href={`https://in.tradingview.com/chart/GEoh93hM/?symbol=NSE%3A${
+                stock.split(":")[1] || stock
+              }`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: "none" }}
+                >
+                  {stock.split(":")[1] || stock}
+                </a>
+              </span>
+            ))}
+        </div>
+      </div>}
+      {!showCharts && result && result.length > 0 && (
+        <button
+          onClick={createScriptsForAllStocks}
+          style={{ marginTop: "20px" }}
+        >
+          See charts
+        </button>
+      )}
       {result && result.length > 0 ? (
         <center>
-           <div
-              className="tradingview-widget-container chartsContainer"
-              ref={container}
-            >
-              <div
-                className="tradingview-widget-container__widget"
-                style={{ height: "calc(100% - 32px)", width: "100%" }}
-              ></div>
-              <div className="tradingview-widget-copyright">
-                <a
-                  href="https://www.tradingview.com/"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  .
-                </a>
-              </div>
+          <div
+            className="tradingview-widget-container chartsContainer"
+            ref={container}
+          >
+            <div
+              className="tradingview-widget-container__widget"
+              style={{ height: "calc(100% - 32px)", width: "100%" }}
+            ></div>
+            <div className="tradingview-widget-copyright">
+              <a
+                href="https://www.tradingview.com/"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                .
+              </a>
             </div>
+          </div>
         </center>
       ) : (
         <p>No results found.</p>
@@ -94,4 +123,3 @@ const Result = ({ result,tf }) => {
 };
 
 export default Result;
-
