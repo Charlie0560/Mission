@@ -13,7 +13,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Frontend paths
 frontend_folder = os.path.abspath(os.path.join(os.getcwd(), "..", "mission"))
-dist_folder = os.path.join(os.getcwd(), "mission", "dist")
+dist_folder = os.path.abspath(os.path.join(os.getcwd(), "../mission/dist"))
 print("Frontend folder:", frontend_folder)
 print("Dist folder:", dist_folder)
 
