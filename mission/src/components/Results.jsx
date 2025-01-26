@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 // import TradingView from "./TradingView";
 import "../App.css";
 
-const Result = ({ result, tf }) => {
+const Result = ({ result, tf,scanning }) => {
   const container = useRef();
   const [showCharts, setShowcharts] = useState(false);
 
@@ -45,9 +45,10 @@ const Result = ({ result, tf }) => {
     return s_name;
   };
   return (
-    <center>
+    <>
+    {!scanning && <center>
       <h2>Results</h2>
-      {!showCharts && <div className="list" >
+      {result && result.length > 0 && !showCharts && <div className="list" >
         <div className="moneyControl">
           <h4>MoneyControl</h4>
           {!showCharts &&
@@ -118,7 +119,9 @@ const Result = ({ result, tf }) => {
       ) : (
         <p>No results found.</p>
       )}
-    </center>
+    </center>}
+    </>
+
   );
 };
 

@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { processStocks } from "../services/api";
 
-const Form = ({ setResults,setTf }) => {
+const Form = ({ setResults,setTf,setScanning }) => {
   const [interval, setInterval] = useState("1d");
   const [price, setPrice] = useState(200);
   const [loading, setLoading] = useState(false); // For spinner/loader
   const [seconds, setSeconds] = useState(0); // For countdown timer
   const secondsRef = useRef(0); // Ref to keep track of the seconds count
 
-  const priceArray = [200,300,500]
+  const priceArray = [200,300,500,"All"]
   // Start countdown when loading begins
 
   useEffect(() => {
@@ -34,6 +34,7 @@ const Form = ({ setResults,setTf }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setScanning(true);
     setSeconds(0);
     if (interval === "1d") {
         setTf("D");
@@ -63,6 +64,7 @@ const Form = ({ setResults,setTf }) => {
     } finally {
       setLoading(false);
       setSeconds(0);
+      setScanning(false)
     }
   };
 
@@ -78,7 +80,7 @@ const Form = ({ setResults,setTf }) => {
         {/* Dropdown for Price */}
         <select
           value={price}
-          onChange={(e) => setPrice(parseInt(e.target.value, 10))}
+          onChange={(e) => setPrice(parseInt(e.target.value, 10) || e.target.value)}
         >
           {priceArray.map((p) => (
             <option key={p} value={p}>

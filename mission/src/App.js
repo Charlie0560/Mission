@@ -5,6 +5,7 @@ import Result from "./components/Results";
 const App = () => {
   const [results, setResults] = useState([]);
   const [timeFrame,setTf] = useState('D')
+  const [scanning,setScanning] = useState(false)
 
   // Load results from local storage on component mount
   useEffect(() => {
@@ -23,8 +24,8 @@ const App = () => {
 
   return (
     <div>
-      <Form setResults={setResults} setTf={setTf}/>
-      <Result result={results} tf={timeFrame} />
+      <Form setResults={setResults} setTf={setTf} setScanning={setScanning}/>
+      <Result result={results} tf={timeFrame} scanning={scanning}/>
     </div>
   );
 };
