@@ -21,13 +21,10 @@ print("Dist folder:", dist_folder)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Serve frontend
-@app.route("/", defaults={"filename": ""})
+@app.route("/", defaults={"filename": "index.html"})
 @app.route("/<path:filename>")
 def index(filename):
-    print("Requested file:", filename)
-    print("Dist folder exists:", os.path.exists(dist_folder))
-    if os.path.exists(dist_folder):
-        print("Files in dist folder:", os.listdir(dist_folder))
+    print("filename: ",filename)
     if not filename:
         filename = "index.html"
     try:
