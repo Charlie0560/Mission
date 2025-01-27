@@ -13,7 +13,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Frontend paths
 frontend_folder = os.path.abspath(os.path.join(os.getcwd(), "..", "mission"))
-dist_folder = os.path.abspath(os.path.join(os.getcwd(), "../mission/dist"))
+dist_folder = os.path.abspath(os.path.join(os.getcwd(), "../mission/build"))
 print("Frontend folder:", frontend_folder)
 print("Dist folder:", dist_folder)
 
@@ -42,12 +42,7 @@ db.init_app(app)
 # Register blueprints
 app.register_blueprint(stock_blueprint, url_prefix='/api')
 
-# Create database tables when the app starts
-def create_tables():
-    with app.app_context():
-        db.create_all()
 
 # Run the app
 if __name__ == '__main__':
-    create_tables()  # Explicitly call the table creation
-    app.run(debug=True)
+     app.run(debug=True ,port=8080,use_reloader=False)
