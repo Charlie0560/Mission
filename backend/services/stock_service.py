@@ -1,12 +1,9 @@
 import yfinance as yf
 import json
 from utils.helpers import edit_string
+from datetime import datetime, timedelta
 
-
-
-
-
-def process_stocks(price, interval):
+def process_stocks(price, interval , cdate):
     # Load stocks from a JSON file
     file = "PassedStocks.json"
     if price != "All" :
@@ -34,8 +31,14 @@ def process_stocks(price, interval):
     
 
     for stock in stocks:
-        try:
-            data = yf.download(stock,period=period, interval=interval)
+        try:    
+            if cdate:
+                dt_object = datetime.fromisoformat(cdate.replace("Z", "+00:00"))
+                date_only = dt_object.date() + timedelta(days=1)
+                next_date = date_only + timedelta(days=1)
+                data = yf.download(stock, start=date_only, end=next_date)
+            else:
+                data = yf.download(stock,period=period, interval=interval)            
             curr_data = data.iloc[0:1]
             curr_high = curr_data.High.iloc[0].item()
             curr_close = curr_data.Close.iloc[0].item()
@@ -58,7 +61,9 @@ def process_stocks(price, interval):
                     (curr_open != curr_low)
                 )
                 if candle_condition:
-                    if get_20ema(stock)>get_50ema(stock):
+                    if cdate:
+                        result.append(edit_string(stock))
+                    elif get_20ema(stock)>get_50ema(stock):
                         result.append(edit_string(stock))
             else:
                 continue

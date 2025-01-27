@@ -8,12 +8,13 @@ def process_stocks_route():
     data = request.json
     price = data.get('price')
     interval = data.get('interval')
+    cdate = data.get('cdate')
 
     if not price or not interval:
         return jsonify({"error": "Missing required parameters"}), 400
 
     try:
-        result,failed = process_stocks(price, interval)
+        result,failed = process_stocks(price, interval,cdate)
         return jsonify({"result": result, "failed": failed})
     except Exception as e:
         return jsonify({"error": str(e)}), 500

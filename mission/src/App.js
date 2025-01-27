@@ -23,7 +23,7 @@ const App = () => {
   }, []);
 
   return (
-    <div>
+    <div className="project">
       <Form setResults={setResults} setTf={setTf} setScanning={setScanning}/>
       <Result result={results} tf={timeFrame} scanning={scanning}/>
     </div>

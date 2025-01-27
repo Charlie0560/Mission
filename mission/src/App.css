@@ -1,5 +1,7 @@
-.App {
+body {
   text-align: center;
+  background-color: #757e91;
+  color: white;
 }
 
 .App-logo {
@@ -49,7 +51,8 @@
   row-gap: 20px;
   margin-top: 15px;
 }
-.form select {
+.form select 
+.form input{
   padding: 5px;
 }
 
