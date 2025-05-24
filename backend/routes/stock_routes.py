@@ -3,7 +3,7 @@ from tasks.stock_tasks import process_stocks_task
 from flask_cors import CORS
 
 stock_blueprint = Blueprint('stocks', __name__)
-CORS(stock_blueprint, origins=["*"])
+CORS(stock_blueprint, origins=["https://mission-beta.vercel.app"])
 
 @stock_blueprint.route('/process-stocks', methods=['POST'])
 def process_stocks_route():
