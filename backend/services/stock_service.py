@@ -7,6 +7,32 @@ from datetime import datetime, timedelta
 def calculate_ema(data, period):
     return data['Close'].ewm(span=period, adjust=False).mean()
 
+
+def get_stock_data(stock, interval, period, cdate):
+    try:
+        stock = stock.replace("$", "")  # Clean up ticker symbol
+        print("Stock: " , stock)
+        ticker = yf.Ticker(stock)
+
+        if cdate:
+            # Convert input date to datetime
+            dt_object = datetime.fromisoformat(cdate.replace("Z", "+00:00")) if "T" in cdate else datetime.strptime(cdate, "%Y-%m-%d")
+            date_only = dt_object.date()
+            start_date = date_only - timedelta(days=150)
+            end_date = date_only + timedelta(days=1)
+            data = ticker.history(start=start_date, end=end_date, interval=interval)
+        else:
+            data = ticker.history(period=period, interval=interval)
+
+        data.dropna(inplace=True)
+        if data.empty or len(data) < 1:
+            raise ValueError(f"{stock}: No data found, possibly delisted or invalid symbol.")
+        return data
+    except Exception as e:
+        print(f"Error fetching data for {stock}: {e}")
+        return None
+
+
 def process_stocks(price, interval, cdate):
     file = "PassedStocks.json"
     if price != "All":
@@ -29,43 +55,33 @@ def process_stocks(price, interval, cdate):
     interval = interval or "1d"
 
     if interval == "1wk":
-        period="5d"
-    elif interval=="1mo":
-        period="1mo"
-    
-    
+        period = "5d"
+    elif interval == "1mo":
+        period = "1mo"
+
     for stock in stocks:
+        data = get_stock_data(stock, interval, period, cdate)
+        if data is None:
+            failed.append(stock)
+            continue
+
         try:
-            stock = stock.replace("$", "")  # Ensure clean ticker
-            ticker = yf.Ticker(stock)
-            
-            if cdate:
-              # Convert input date string (e.g., "2025-05-01") to date object
-              dt_object = datetime.fromisoformat(cdate.replace("Z", "+00:00")) if "T" in cdate else datetime.strptime(cdate, "%Y-%m-%d")
-              date_only = dt_object.date()
-
-              # Calculate 6 months before the given date
-              start_date = date_only - timedelta(days=150)
-              end_date = date_only + timedelta(days=1)  # +1 day to ensure inclusion if market was closed on date_only
-
-              data = ticker.history(start=start_date, end=end_date, interval=interval)
-            else:
-                data = ticker.history(period=period, interval=interval)
-
-            data.dropna(inplace=True)
-            if data.empty or len(data) < 1:
-                failed.append(stock)
-                continue
-
             # Calculate EMAs
             data['EMA20'] = calculate_ema(data, 20)
             data['EMA50'] = calculate_ema(data, 50)
-            # Fetch row: either for date or latest
+
+            # Fetch row: either for specific date or latest
             if cdate:
+                dt_object = datetime.fromisoformat(cdate.replace("Z", "+00:00")) if "T" in cdate else datetime.strptime(cdate, "%Y-%m-%d")
+                date_only = dt_object.date()
                 latest = data.loc[data.index.date == date_only]
-                latest = latest.iloc[-1]
+                latest = latest.iloc[-1] if not latest.empty else None
             else:
                 latest = data.iloc[-1]
+
+            if latest is None:
+                failed.append(stock)
+                continue
 
             # Extract OHLC and EMAs
             O = latest['Open']
@@ -77,6 +93,7 @@ def process_stocks(price, interval, cdate):
             CL = H - L
             M = (H + L) / 2
             LM = (M + L) / 2
+
             # Candle condition
             if C > O:
                 conditions_met = (
@@ -91,6 +108,8 @@ def process_stocks(price, interval, cdate):
                 if conditions_met:
                     result.append(edit_string(stock))
 
-        except Exception:
+        except Exception as e:
+            print(f"Processing error for {stock}: {e}")
             failed.append(stock)
+
     return result, failed

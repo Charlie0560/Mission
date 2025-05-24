@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { processStocks } from "../services/api";
+import { getTaskStatus, processStocks } from "../services/api";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -43,37 +43,57 @@ const Form = ({ setResults, setTf, setScanning }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setScanning(true);
     setSeconds(0);
-    if (interval === "1d") {
-      setTf("D");
-    } else if (interval === "1wk") {
-      setTf("W");
-    } else if (interval === "1mo") {
-      setTf("M");
-    }
-
+  
+    // Prepare the time frame (optional)
+    let tfValue;
+    if (interval === "1d") tfValue = "D";
+    else if (interval === "1wk") tfValue = "W";
+    else if (interval === "1mo") tfValue = "M";
+  
     try {
-      const response = await processStocks({ interval, price, cdate });
-      console.log(response.data);
-      setResults(response.data.result);
-      const tfValue = interval === "1d" ? "D" : interval === "1wk" ? "W" : "M";
-      const timestamp = new Date().getTime();
-      localStorage.setItem(
-        "stockResults",
-        JSON.stringify({ data: response.data.result, tf: tfValue, timestamp })
-      );
-
-      if (response) {
-        setSeconds(0);
+      // Step 1: Submit the job and get task_id
+      const response = await processStocks({ interval, price });
+      window.alert("hi")
+      const taskId = response.data.task_id;
+      console.log("Task submitted, task_id:", taskId);
+  
+      // Step 2: Start polling for status
+      pollTaskStatus(taskId, tfValue);
+    } catch (error) {
+      console.error("Error submitting task:", error);
+      setLoading(false);
+    }
+  };
+  const pollTaskStatus = async (taskId, tfValue) => {
+    try {
+      const statusResponse = await getTaskStatus(taskId);
+      const data = await statusResponse.data;
+      if (data.status === "pending") {
+        // Still processing, poll again after delay
+        setTimeout(() => pollTaskStatus(taskId, tfValue), 3000);
+      } else if (data.status === "completed") {
+        // Task done, update results
+        setResults(data.data.result);
+        const timestamp = new Date().getTime();
+  
+        localStorage.setItem(
+          "stockResults",
+          JSON.stringify({ data: data.data.result, tf: tfValue, timestamp })
+        );
+  
+        setLoading(false);
+      } else if (data.status === "failed") {
+        console.error("Task failed:", data.error);
+        setLoading(false);
+      } else {
+        // Other states
+        console.log("Task status:", data.status);
+        setLoading(false);
       }
     } catch (error) {
-      console.error("Error fetching data:", error);
-      setSeconds(0);
-    } finally {
+      console.error("Error polling task status:", error);
       setLoading(false);
-      setSeconds(0);
-      setScanning(false);
     }
   };
 
