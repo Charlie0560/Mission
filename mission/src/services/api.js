@@ -1,5 +1,5 @@
 import axios from 'axios';
 
-const API = axios.create({ baseURL: "http://localhost:5000" });
+const API = axios.create({ baseURL: "https://mission-1-percent.onrender.com" });
 
 export const processStocks = (data) => API.post('/api/process-stocks', data);
