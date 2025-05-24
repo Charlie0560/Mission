@@ -12,13 +12,10 @@ def process_stocks(price, interval, cdate):
     if price != "All":
         price = float(price)
         if price == 200:
-            print("200")
             file = "Stocks200.json"
         elif price == 300:
-            print("300")
             file = "Stocks300.json"
         elif price == 500:
-            print("500")
             file = "Stocks500.json"
 
     with open(file) as f:
@@ -81,20 +78,7 @@ def process_stocks(price, interval, cdate):
             M = (H + L) / 2
             LM = (M + L) / 2
             # Candle condition
-            print("Open: ", O)
-            print("High: ", H)
-            print("Low: ", L)
-            print("Close: ", C)
-            print("EMA20: ", ema_20)
-            print("EMA50: ", ema_50)
             if C > O:
-                print( L <= O)
-                print(C<H)
-                print(C>M)
-                print(O<LM)
-                print(C>1.02*O)
-                print(O<ema_20<C)
-                print(ema_20>ema_50)
                 conditions_met = (
                     L <= O and
                     C < H and
@@ -104,7 +88,6 @@ def process_stocks(price, interval, cdate):
                     O < ema_20 < C and
                     ema_20 > ema_50
                 )
-                print("condition: ", conditions_met)
                 if conditions_met:
                     result.append(edit_string(stock))
 
