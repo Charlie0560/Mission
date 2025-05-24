@@ -16,7 +16,7 @@ const Form = ({ setResults, setTf, setScanning }) => {
   const [price, setPrice] = useState(200);
   const [loading, setLoading] = useState(false); // For spinner/loader
   const [seconds, setSeconds] = useState(0); // For countdown timer
-  const [cdate,setCDate] = useState(null)
+  const [cdate, setCDate] = useState(null);
   const secondsRef = useRef(0); // Ref to keep track of the seconds count
 
   const priceArray = [200, 300, 500, "All"];
@@ -54,7 +54,7 @@ const Form = ({ setResults, setTf, setScanning }) => {
     }
 
     try {
-      const response = await processStocks({ interval, price , cdate });
+      const response = await processStocks({ interval, price, cdate });
       console.log(response.data);
       setResults(response.data.result);
       const tfValue = interval === "1d" ? "D" : interval === "1wk" ? "W" : "M";
@@ -79,45 +79,164 @@ const Form = ({ setResults, setTf, setScanning }) => {
 
   return (
     <center style={{ marginTop: "20px" }}>
-      <Box sx={{ maxWidth: 300 , display: 'flex', flexDirection: 'column', rowGap:'20px'}}>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">interval</InputLabel>
+      <Box
+        sx={{
+          maxWidth: 360,
+          backgroundColor: "#2e2e3e",
+          borderRadius: "16px",
+          padding: "24px",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+        }}
+      >
+        <FormControl
+          fullWidth
+          sx={{ "& .MuiInputLabel-root": { color: "white" } }}
+        >
+          <InputLabel id="interval-label">Interval</InputLabel>
           <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
+            labelId="interval-label"
+            id="interval-select"
             value={interval}
-            label="interval"
+            label="Interval"
             onChange={(e) => setInterval(e.target.value)}
-            disabled={cdate ? true : false}
+            disabled={!!cdate}
+            sx={{
+              color: "white",
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "white",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#ccc",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "white",
+              },
+              "& svg": {
+                color: "white", // Dropdown arrow
+              },
+            }}
+            MenuProps={{
+              PaperProps: {
+                sx: {
+                  backgroundColor: "#2e2e3e",
+                  color: "white",
+                },
+              },
+            }}
           >
             <MenuItem value={"1d"}>1 Day</MenuItem>
             <MenuItem value={"1wk"}>1 Week</MenuItem>
             <MenuItem value={"1mo"}>1 Month</MenuItem>
           </Select>
         </FormControl>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Price</InputLabel>
+
+        <FormControl
+          fullWidth
+          sx={{ "& .MuiInputLabel-root": { color: "white" } }}
+        >
+          <InputLabel id="price-label">Price</InputLabel>
           <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
+            labelId="price-label"
+            id="price-select"
             value={price}
-            label="Price "
+            label="Price"
             onChange={(e) =>
               setPrice(parseInt(e.target.value, 10) || e.target.value)
             }
+            sx={{
+              color: "white",
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "white",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#ccc",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "white",
+              },
+              "& svg": {
+                color: "white",
+              },
+            }}
+            MenuProps={{
+              PaperProps: {
+                sx: {
+                  backgroundColor: "#2e2e3e",
+                  color: "white",
+                },
+              },
+            }}
           >
             {priceArray.map((p) => (
-            <MenuItem key={p} value={p}>{p}</MenuItem>
-          ))}
+              <MenuItem key={p} value={p}>
+                {p}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
-        <LocalizationProvider dateAdapter={AdapterDayjs} >
-          <DatePicker maxDate={dayjs()} onChange={(val)=>{console.log(val); setCDate(val)}}/>
+
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            maxDate={dayjs()}
+            onChange={(val) => {
+              console.log(val);
+              setCDate(val);
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                color: "white",
+                "& fieldset": {
+                  borderColor: "white",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#cccccc",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "white",
+                },
+                "& input": {
+                  color: "white",
+                },
+                "& svg": {
+                  color: "white", // calendar icon
+                },
+              },
+            }}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                InputLabelProps: {
+                  style: { color: "white" },
+                },
+              },
+              popper: {
+                sx: {
+                  ".MuiPaper-root": {
+                    backgroundColor: "#2e2e3e",
+                    color: "white",
+                  },
+                  ".MuiPickersDay-root": {
+                    color: "white",
+                  },
+                  ".MuiPickersDay-today": {
+                    borderColor: "white",
+                  },
+                  ".MuiPickersDay-dayOutsideMonth": {
+                    color: "#aaa",
+                  },
+                },
+              },
+            }}
+          />
         </LocalizationProvider>
-      <Button variant="contained" onClick={handleSubmit}>Submit</Button>
+        <Button variant="contained" onClick={handleSubmit}>
+          Submit
+        </Button>
       </Box>
 
-      
       {/* Display loader and timer while loading */}
       {loading && (
         <div className="loader-container">
