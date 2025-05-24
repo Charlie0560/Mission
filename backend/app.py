@@ -13,7 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///sto
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Enable CORS for API routes
-CORS(app, origins=["https://mission-beta.vercel.app"]) 
+CORS(app, origins=["https://mission-1-percent.onrender.com"]) 
 
 # Initialize database
 db.init_app(app)

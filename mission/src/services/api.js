@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = axios.create({ baseURL: "https://mission-beta.vercel.app" , headers: {
+const API = axios.create({ baseURL: "https://mission-1-percent.onrender.com" , headers: {
     "Content-Type": "application/json"
   }});
 
